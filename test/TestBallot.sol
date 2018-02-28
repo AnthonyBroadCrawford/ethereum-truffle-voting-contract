@@ -15,4 +15,16 @@ contract TestBallot{
 
     Assert.equal(actual, expected, "Chairperson of ballot should be recorded");
   }
+
+  function testProposalIsAddedToListOfPropsoals() public {
+    ballot.Register("Tax Northwestern");
+
+    //
+    //NO way to make these tests automic such that I don't account for the test above incrementing the proposal count
+    //
+    uint expected = 2;
+    uint actual = ballot.getProposalCount();
+
+    Assert.equal(actual, expected, "Proposal should have been recorded.");
+  }
 }
