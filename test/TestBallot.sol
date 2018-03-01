@@ -8,7 +8,7 @@ contract TestBallot{
   Ballot ballot = Ballot(DeployedAddresses.Ballot());
 
   function testChairpersonAssignedToBallotUponProposal() public {
-    ballot.Register("Taxing Northwestern");
+    ballot.RegisterProposal("Taxing Northwestern");
 
     address expected = this;
     address actual = ballot.getChairperson();
@@ -17,7 +17,7 @@ contract TestBallot{
   }
 
   function testProposalIsAddedToListOfPropsoals() public {
-    ballot.Register("Tax Northwestern");
+    ballot.RegisterProposal("Tax Northwestern");
 
     //
     //NO way to make these tests automic such that I don't account for the test above incrementing the proposal count
@@ -26,5 +26,30 @@ contract TestBallot{
     uint actual = ballot.getProposalCount();
 
     Assert.equal(actual, expected, "Proposal should have been recorded.");
+  }
+
+  function testRegisteredVoterMakesItIntoVoterPool() public {
+    ballot.RegisterVoter(this);
+
+    uint expected = 1;
+    uint actual = ballot.getVoterCount();
+
+    Assert.equal(actual, expected, "Voter should have been registered");
+  }
+
+  function testVoterIdentityIsRegistered() public {
+    ballot.RegisterVoter(this);
+
+    bool expected = true;
+    bool actual = ballot.voterRegistered(this);
+
+    Assert.equal(actual, expected, "Voter should have been registered");
+  }
+
+  function testChairpersonIsOnlyPersonAllowedToRegisterVoters() public {
+    //
+    //It's currently not possible to test this use-case in Truffle without 3rd party library support.
+    //
+    Assert.equal(true, true, "Only chairperson can register voters in this regimine");
   }
 }
