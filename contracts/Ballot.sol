@@ -22,14 +22,14 @@ contract Ballot {
   address public chairperson;
 
   Voter[] public voters;
-  Proposal[] public proposals;
+  Proposal public proposal;
 
   function RegisterProposal(string proposalName) public {
     chairperson = msg.sender;
-    proposals.push(Proposal({
-        name: proposalName,
-        voteCount: 0
-      }));
+    proposal = Proposal({
+      name: proposalName,
+      voteCount: 0
+    });
   }
 
   function RegisterVoter(address voter) public {
@@ -64,8 +64,8 @@ contract Ballot {
     return voters.length;
   }
 
-  function getProposalCount() public view returns (uint) {
-    return proposals.length;
+  function getProposal() public view returns (Proposal) {
+    return proposal;
   }
 
   function getChairperson() public view returns (address){
