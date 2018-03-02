@@ -2,9 +2,6 @@ pragma solidity ^0.4.16;
 
 contract Ballot {
 
-  //
-  //declare our data types
-  //
   struct Voter {
     uint weight;
     bool voted;
@@ -19,6 +16,7 @@ contract Ballot {
 
   //
   //declare Contract variables
+  //
   address public chairperson;
 
   Voter[] public voters;
@@ -45,6 +43,63 @@ contract Ballot {
       }));
   }
 
+
+
+
+  function Vote(address voterIdentity, string proposalName) public view returns (bool) {
+    bool successfullyVoted = true;
+
+    if(keccak256(proposal.name) != keccak256(proposalName)){
+      return false;
+    }
+
+    if(voterRegistered(voterIdentity) == false){
+      return false;
+    }
+
+    Voter storage voter;
+
+    //
+    //I have a private function below, but I don't know enough why returning this variable from a private function causing a cast error (not grocking something fundamental about the Blockchain)
+    //
+    for(uint index = 0; index < voters.length; index++){
+      if(voters[index].delegate == voterIdentity){
+        voter = voters[index];
+      }
+    }
+
+    if(voter.voted == true){
+      return false;
+    }
+
+    voter.voted = true;
+    successfullyVoted = true;
+
+    //voter.vote = NEEDS PASSED IN
+    proposal.voteCount++;
+
+
+    return successfullyVoted;
+  }
+
+
+  //
+  //Private support functions
+  //
+  function getVoterByIdentity(address voterIdentity) private view returns (Voter){
+    require(voterRegistered(voterIdentity) == true);
+
+    Voter storage voter;
+
+    for(uint index = 0; index < voters.length; index++){
+      if(voters[index].delegate == voterIdentity){
+        voter = voters[index];
+      }
+    }
+
+    return voter;
+  }
+
   //
   //Getters for access (currently accessed only in the unit test suite)
   //
@@ -64,8 +119,8 @@ contract Ballot {
     return voters.length;
   }
 
-  function getProposal() public view returns (Proposal) {
-    return proposal;
+  function getProposalVoteCount() public view returns (uint) {
+    return proposal.voteCount;
   }
 
   function getChairperson() public view returns (address){
