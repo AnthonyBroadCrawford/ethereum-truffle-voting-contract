@@ -14,13 +14,14 @@ contract Ballot {
     uint voteCount;
   }
 
-  //
-  //declare Contract variables
-  //
+  //Person who proposed the ballot
   address public chairperson;
 
-  Voter[] public voters;
+  //Actual item voters are voting on
   Proposal public proposal;
+
+  //Valid voters in this election
+  Voter[] public voters;
 
   function RegisterProposal(string proposalName) public {
     chairperson = msg.sender;
