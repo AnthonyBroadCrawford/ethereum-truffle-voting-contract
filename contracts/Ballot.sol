@@ -43,9 +43,6 @@ contract Ballot {
       }));
   }
 
-
-
-
   function Vote(address voterIdentity, string proposalName) public view returns (bool) {
     bool successfullyVoted = true;
 

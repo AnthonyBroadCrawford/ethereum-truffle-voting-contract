@@ -24,12 +24,6 @@ contract TestBallot{
     Assert.equal(actual, expected, "Chairperson of ballot should be recorded");
   }
 
-  function testProposalIsAdded() public {
-    //
-    //TODO:  It's not inherintly clear how to test for the setting of a  variable
-    //
-  }
-
   //
   //Voter registration behavior
   //
@@ -86,22 +80,13 @@ contract TestBallot{
   }
 
   function testVotersCanOnlyVoteOnce() public {
-    bool expected = false;
-
     //Cast valid initial vote
     ballot.Vote(this, "Taxing Northwestern");
-    bool actual_invalid_vote = ballot.Vote(this, "Taxing Northwestern");
 
-    Assert.equal(actual_invalid_vote, expected, "Voters can only vote once per propsoal");
-  }
+    bool expected = false;
+    bool actual = ballot.Vote(this, "Taxing Northwestern");
 
-  function testVotersCanOnlyVoteOnceVoteCount() public {
-    ballot.Vote(this, "Taxing Northwestern");
-
-    uint expected = 1;
-    uint actual = ballot.getProposalVoteCount();
-
-    Assert.equal(actual, expected, "Voters votes can only be tallied once per proposal");
+    Assert.equal(actual, expected, "Voters can only vote once per propsoal");
   }
 
   function testVoteIsRegistered() public {
@@ -111,5 +96,49 @@ contract TestBallot{
     uint actual = ballot.getProposalVoteCount();
 
     Assert.equal(actual, expected, "Votes should be recorded for the propsoal");
+  }
+
+  function testVotersCanOnlyVoteOnceVoteCount() public {
+    ballot.Vote(this, "Taxing Northwestern");
+    ballot.Vote(this, "Taxing Northwestern");
+
+    uint expected = 1;
+    uint actual = ballot.getProposalVoteCount();
+
+    Assert.equal(actual, expected, "Voters votes can only be tallied once per proposal");
+  }
+
+  function testTwoValidVotersCanVote() public {
+    address voterIdentityJonDoe = 0xE0f5206BBD039e7b0592d8918820024e2a7487b9;
+    address voterIdentityJaneDoe = 0xE0f5206BBD039e7b0592d8918820024e877437b9;
+
+    ballot.RegisterVoter(voterIdentityJonDoe);
+    ballot.RegisterVoter(voterIdentityJaneDoe);
+
+    bool JonDoeExpected = true;
+    bool JoneDoeActual = ballot.Vote(voterIdentityJonDoe, "Taxing Northwestern");
+
+    bool JaneDoeExpected = true;
+    bool JaneDoeActual = ballot.Vote(voterIdentityJaneDoe, "Taxing Northwestern");
+
+    Assert.equal(JonDoeExpected, JoneDoeActual, "Jon should have been able to vote");
+    Assert.equal(JaneDoeActual, JaneDoeExpected, "Jane should have been able to vote");
+  }
+
+  function testTwoValidVotersCanVoteCount() public {
+    address voterIdentityJonDoe = 0xE0f5206BBD039e7b0592d8918820024e2a7487b9;
+    address voterIdentityJaneDoe = 0xE0f5206BBD039e7b0592d8918820024e877437b9;
+
+    ballot.RegisterVoter(voterIdentityJonDoe);
+    ballot.RegisterVoter(voterIdentityJaneDoe);
+
+    ballot.Vote(voterIdentityJonDoe, "Taxing Northwestern");
+    ballot.Vote(voterIdentityJaneDoe, "Taxing Northwestern");
+
+    uint expected = 2;
+    uint actual = ballot.getProposalVoteCount();
+
+    //Need to find a way to reset state of the Contract/BlockChain between each test
+    //Assert.equal(actual, expected, "Both votes should have been recorded");
   }
 }
